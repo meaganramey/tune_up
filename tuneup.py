@@ -54,20 +54,30 @@ def find_duplicate_movies(src):
 
 
 def optimized_find_duplicate_movies(src):
-    # Your code here
-    return
+    movie_dict = {}
+    result = []
+    movies = read_movies(src)
+    for movie in movies:
+        if movie in movie_dict:
+            movie_dict[movie] += 1
+        else:
+            movie_dict[movie] = 1
+    for k, v in movie_dict.items():
+        if v > 1:
+            result.append(k)
+    return result
 
 
 def timeit_helper(func_name, func_param):
     """Part A: Obtain some profiling measurements using timeit"""
     assert isinstance(func_name, str)
-    stmt = f'{func_name}({func_param})'
+    stmt = f"{func_name}('{func_param}')"
     setup = f'from tuneup import {func_name}'
     t = timeit.Timer(stmt, setup)
     runs_per_repeat = 3
     num_repeats = 5
     result = t.repeat(repeat=num_repeats, number=runs_per_repeat)
-    time_cost = result / num_repeats
+    time_cost = min(result) / num_repeats
     print(f"""func={func_name}  num_repeats={num_repeats}
             runs_per_repeat={runs_per_repeat} time_cost={time_cost:.3f} sec""")
     return t
