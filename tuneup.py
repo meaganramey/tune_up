@@ -5,11 +5,11 @@
 Use the timeit and cProfile libraries to find bad code.
 """
 
-__author__ = "Meagan Ramey"
+__author__ = "Meagan Ramey, with help from Joe H."
 
-# import cProfile
-# import pstats
-# import functools
+import cProfile
+import pstats
+from functools import wraps
 import timeit
 
 
@@ -17,9 +17,14 @@ def profile(func):
     """A cProfile decorator function that can be used to
     measure performance.
     """
-    # Be sure to review the lesson material on decorators.
-    # You need to understand how they are constructed and used.
-    raise NotImplementedError("Complete this decorator function")
+    @wraps(func)
+    def wrapper(*args, **kwargs):
+        with cProfile.Profile() as pr:
+            movie_time = func(*args, **kwargs)
+        movie_stats = pstats.Stats(pr)
+        movie_stats.sort_stats('cumulative').print_stats()
+        return movie_time
+    return wrapper
 
 
 def read_movies(src):
@@ -37,6 +42,7 @@ def is_duplicate(title, movies):
     return False
 
 
+@profile
 def find_duplicate_movies(src):
     """Returns a list of duplicate movies from a src list."""
     # Not optimized
